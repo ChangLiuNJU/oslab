@@ -33,10 +33,10 @@ V(Semaphore *sem) {
 }
 
 void 
-send(pid_t dst, Message *m) {
+send(pid_t src, pid_t dst, Message *m) {
 	lock();
 	PCB *pcb = &PCBs[dst];	//get PCB by id
-	m->src = current->pid;
+	m->src = src;
 	m->dst = dst;
 	list_add(&m->list, &pcb->msgq);
 	if (pcb->state == SLEEP) {
