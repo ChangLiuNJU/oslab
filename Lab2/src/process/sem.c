@@ -33,10 +33,9 @@ V(Semaphore *sem) {
 }
 
 void 
-send(pid_t src, pid_t dst, Message *m) {
+send(pid_t dst, Message *m) {
 	lock();
 	PCB *pcb = &PCBs[dst];	//get PCB by id
-	m->src = src;
 	m->dst = dst;
 	list_add(&m->list, &pcb->msgq);
 	if (pcb->state == SLEEP) {
@@ -47,7 +46,9 @@ send(pid_t src, pid_t dst, Message *m) {
 
 void 
 receive(pid_t src, Message *m) {
+	lock();
 	if (list_empty(&current->msgq)) {	//sleep if the message queue is empty.
+		unlock();
 		sleep();
 	}
 	list_head 	*pos;
@@ -58,9 +59,12 @@ receive(pid_t src, Message *m) {
 		if (src == ANY || tmp->src == src) {
 			*m = *tmp;
 			list_del(pos);
+			unlock();
+			asm volatile("int $0x80");
 			return;
 		}
 	}
-
+	unlock();
 	sleep();		//Message unfounded.
+
 }

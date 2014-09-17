@@ -82,9 +82,11 @@ sleep() {
 }
 void 
 wakeup(struct PCB* pcb) {
+	lock();
 	if (pcb->state == SLEEP) {
 		pcb->state = READY;
 		list_del(&pcb->state_list);
 		list_add(&pcb->state_list, &readyq_h);
 	}
+	unlock();
 }
