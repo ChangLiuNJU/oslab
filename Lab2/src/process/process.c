@@ -15,8 +15,19 @@ init_idle_thread() {
 	current->lock_depth = 0;
 	current->state = READY;
 
+	current->mutex.count = 1;
+	INIT_LIST_HEAD(&(current->mutex.queue));
+	current->msgsemANY.count = 0;
+	INIT_LIST_HEAD(&(current->msgsemANY.queue));
+	int i = 0;
+	for (i = 0; i < NR_PCBS; i++) {
+		current->msgsem[i].count = 0;
+		INIT_LIST_HEAD(&(current->msgsem[i].queue));
+	}
+	for (i = 0; i < NR_MSGS; i++) {
+		current->msgq[i].src = INVALID_MSG_SRC;
+	}
 	list_add(&(pcb->state_list), &readyq_h);
-
 	pcbs_avl = 1;
 }
 
@@ -29,8 +40,20 @@ create_kthread(void (*entry)(void)) {
 	pcb->pid 		 = pcbs_avl;	//allocate pid
 	pcbs_avl ++;
 	pcb->lock_depth  = 0;			//set lock depth
-	INIT_LIST_HEAD(&pcb->semq);
-	INIT_LIST_HEAD(&pcb->msgq);
+	
+	INIT_LIST_HEAD(&(pcb->semq));
+	pcb->mutex.count = 1;
+	INIT_LIST_HEAD(&(pcb->mutex.queue));
+	pcb->msgsemANY.count = 0;
+	INIT_LIST_HEAD(&(pcb->msgsemANY.queue));
+	int i = 0;
+	for (i = 0; i < NR_PCBS; i++) {
+		pcb->msgsem[i].count = 0;
+		INIT_LIST_HEAD(&(pcb->msgsem[i].queue));
+	}
+	for (i = 0; i < NR_MSGS; i++) {
+		pcb->msgq[i].src = INVALID_MSG_SRC;
+	}
 
 	//set the trapframe
 	pcb->tf 		 = (struct TrapFrame*)(pcb->kstack + KSTACK_SIZE) - 1; 	
@@ -62,11 +85,9 @@ lock() {
 }
 void
 unlock() {
-	if (current->lock_depth > 0) {
-		current->lock_depth--;
-	}
-	else if (current->lock_depth == 0) {
-		asm volatile("sti");	
+	current->lock_depth--;
+	if (current->lock_depth == 0) {
+		asm volatile("sti");
 	}
 }
 void

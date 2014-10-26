@@ -28,11 +28,6 @@
 .extern irq_handle
 .extern current
 asm_do_irq:
-	
-	# pushl %ds
-	# pushl %es
-	# pushl %fs
-	# pushl %gs
 	pushal
 
 	pushl %esp
@@ -41,13 +36,8 @@ asm_do_irq:
 	movl (current), %eax
 	movl (%eax), %esp
 
-	# addl $4, %esp
-
 	popal
-	# popl %gs
-	# popl %fs
-	# popl %es
-	# popl %ds
 
 	addl $4, %esp
+
 	iret

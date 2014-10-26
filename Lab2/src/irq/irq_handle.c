@@ -2,6 +2,7 @@
 #include "device.h"
 #include "process.h"
 #include "lib.h"
+#include "drivers.h"
 
 #define NR_IRQ_HANDLE 32
 #define NR_HARD_INTR 16
@@ -31,34 +32,20 @@ add_irq_handle(int irq, void (*func)(void)) {
 
 void
 irq_handle(struct TrapFrame *tf) {
-	
 	current->tf = tf;	//save the current trap frame 
 
 	need_sched = FALSE;
 
-	if (tf->irq == 1000) {
+	if (tf->irq >= 1000) {
 		int irq_id = tf->irq - 1000;
 		assert(irq_id < NR_HARD_INTR);
 		IRQ_t *f = handles[irq_id];
-
 		while (f != NULL) {
 			f->routine();
 			f = f->next;
 		}
-		// printf("!\n");
-	} else if (tf->irq == 1001) {
-		// assert(0);
-		uint32_t code = in_byte(0x60);
-		uint32_t val = in_byte(0x61);
-		out_byte(0x61, val | 0x80);
-		out_byte(0x61, val);
-		putchar('0' + code / 100);
-		putchar('0' + code / 10 % 10);
-		putchar('0' + code % 10);
-		putchar('\n');
 	} else if (tf->irq == 0x80) {
 		need_sched = TRUE;
-		// schedule();	
 	}
 	else {
 		printf("%d\n", tf->irq);

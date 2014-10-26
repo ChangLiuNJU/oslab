@@ -10,5 +10,6 @@ typedef unsigned char  uint8_t;
 typedef          char  int8_t;
 typedef unsigned int   size_t;
 typedef unsigned int   off_t;
-typedef unsigned int   pid_t;
+typedef 		 int   pid_t;
+typedef unsigned char  bool;
 #endif

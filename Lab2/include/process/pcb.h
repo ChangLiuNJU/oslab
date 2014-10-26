@@ -3,11 +3,13 @@
 
 #include "x86.h"
 #include "lib.h"
+#include "sem.h"
 
 #define KSTACK_SIZE 4096	//kernel stack size
 #define NR_PCBS 	512		//max pcb numbers
 #define SLEEP		1
 #define READY    	0
+#define NR_MSGS     512
 
 /* PCB struct */
 typedef struct PCB {
@@ -17,7 +19,12 @@ typedef struct PCB {
 	uint32_t 			lock_depth;
 	list_head 			state_list;				//state list
 	list_head 			semq;					//Semaphore queue for PV
-	list_head			msgq;					//message queue
+
+	Message				msgq[NR_MSGS];			//Message Box					//message queue
+
+	Semaphore			mutex;					//mutex for send & receive
+	Semaphore			msgsem[NR_PCBS];		//message Sem from arbitray src
+	Semaphore			msgsemANY;				//message Sem from ANY
 	uint8_t 			kstack[KSTACK_SIZE];
 } PCB;
 

@@ -3,18 +3,17 @@
 #include "device.h"
 #include "process.h"
 #include "lib.h"
+#include "drivers.h"
 
-pid_t pidA, pidB, pidC, pidD, pidE;
-
-
+int pidA, pidB, pidC, pidE, pidD;
 void A () { 
 	Message m1, m2;
 	m1.src = current->pid;
 	int x = 0;
 	while(1) {
-		if(x % 100000 == 0) {
+		if(x % 10000000 == 0) {
 			printf("a"); 
-			send(pidE, &m1);
+			send(pidA, pidE, &m1);
 			receive(pidE, &m2);
 		}
 		x ++;
@@ -26,9 +25,9 @@ void B () {
 	int x = 0;
 	receive(pidE, &m2);
 	while(1) {
-		if(x % 100000 == 0) {
+		if(x % 10000000 == 0) {
 			printf("b"); 
-			send(pidE, &m1);
+			send(pidB,pidE, &m1);
 			receive(pidE, &m2);
 		}
 		x ++;
@@ -40,9 +39,9 @@ void C () {
 	int x = 0;
 	receive(pidE, &m2);
 	while(1) {
-		if(x % 100000 == 0) {
+		if(x % 10000000 == 0) {
 			printf("c"); 
-			send(pidE, &m1);
+			send(pidC, pidE, &m1);
 			receive(pidE, &m2);
 		}
 		x ++;
@@ -54,9 +53,9 @@ void D () {
 	receive(pidE, &m2);
 	int x = 0;
 	while(1) {
-		if(x % 100000 == 0) {
+		if(x % 10000000 == 0) {
 			printf("d"); 
-			send(pidE, &m1);
+			send(pidD, pidE, &m1);
 			receive(pidE, &m2);
 		}
 		x ++;
@@ -66,7 +65,7 @@ void D () {
 void E () {
 	Message m1, m2;
 	m2.src = current->pid;
-	char c = ' '; 
+	char c = ' ';
 	while(1) {
 		receive(ANY, &m1);
 		if(m1.src == pidA) {c = '|'; m2.dst = pidB; }
@@ -74,13 +73,53 @@ void E () {
 		else if(m1.src == pidC) {c = '-'; m2.dst = pidD;}
 		else if(m1.src == pidD) {c = '\\';m2.dst = pidA;}
 		else assert(0);
+ 
 		printf("\033[s\033[1000;1000H%c\033[u", c);
-		send(m2.dst, &m2);
+		send(pidE, m2.dst, &m2);
 	}
  
 }
 
 void
+echo() {
+	static int tty = 1;
+	char name[] = "tty*", buf[256];
+	Device *dev;
+	lock();
+	name[3] = '0' + (tty ++);
+	unlock();
+	while (1) {
+		dev = hal_get(name);
+		if (dev != NULL) {
+			dev_write(dev, 0, name, 4);
+			dev_write(dev, 0, "# ", 2);
+			printf("%s```````````%d\n", name, dev->dev_id);
+			hal_list();
+			int i, nread = dev_read(dev, 0, buf, 255);
+			buf[nread] = 0;
+			for (i = 0; i < nread; i ++) {
+				if (buf[i] >= 'a' && buf[i] <= 'z') {
+					buf[i] += 'A' - 'a';
+				}
+			}
+			dev_write(dev, 0, "Got: ", 5);
+			dev_write(dev, 0, buf, nread);
+			dev_write(dev, 0, "\n", 1);
+		} else {
+			 // printf("%s\n", name);
+		}
+	}
+	}
+
+void
+test() {
+	int i;
+	for (i = 0; i < NR_TTY; i ++) {
+		create_kthread(echo);
+	}
+}
+
+void 
 entry(void) {
 	init_timer();
 	init_idt();
@@ -88,22 +127,18 @@ entry(void) {
 	init_serial();
 	init_idle_thread();	
 	
-	// init_hal();
-	// init_tty();
+	init_hal();
+	init_tty();
+	test();
+
+	// pidA = create_kthread(A)->pid;
+	// pidB = create_kthread(B)->pid;
+	// pidC = create_kthread(C)->pid;
+	// pidD = create_kthread(D)->pid;
+	// pidE = create_kthread(E)->pid;
 
 	enable_interrupt();
-
-	// test_setup();
-	pidA = create_kthread(A)->pid;
-	pidB = create_kthread(B)->pid;
-	pidC = create_kthread(C)->pid;
-	pidD = create_kthread(D)->pid;
-	pidE = create_kthread(E)->pid;
-
-	// create_kthread(a);
-	// create_kthread(b);
-	// create_kthread(c);
-	// create_kthread(d);
+	printf("------Enable Interrupt------\n");
 
 	while (1) {
 		wait_for_interrupt();

@@ -8,6 +8,10 @@
 #define SEG_KERNEL_CODE         1 
 #define SEG_KERNEL_DATA         2
 
+#define pa_to_va(addr) \
+	((void*)((uint32_t)(addr)))
+	// ((void*)((uint32_t)(addr) - KOFFSET))
+	
 struct GateDescriptor {
 	uint32_t offset_15_0      : 16;
 	uint32_t segment          : 16;

@@ -3,6 +3,8 @@
 
 void 
 schedule(void) {
+	// printf("schedule start\n");
+	// printf("%d %d %d %d\n", PCBs[2].state, PCBs[3].state, PCBs[4].state, PCBs[5].state );
 	if (!list_empty(&readyq_h) && (current->state == READY)) {
 		struct list_head *tmp;
 		tmp = current->state_list.next;
@@ -14,4 +16,5 @@ schedule(void) {
 	else {
 		current = &PCBs[0];
 	}
+	// printf("schedule end\n");
 }
