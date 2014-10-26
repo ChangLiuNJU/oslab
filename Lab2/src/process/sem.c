@@ -35,11 +35,11 @@ void
 send(pid_t src, pid_t dst, Message *m) {
 	P(&(PCBs[dst].mutex));
 	V(&(PCBs[dst].msgsemANY));
-	if (src >= 0) {
-		V(&(PCBs[dst].msgsem[src]));
-	}
+	V(&(PCBs[dst].msgsem[src]));
+
 	PCB *pcb = &PCBs[dst];	//get PCB by id
 
+	//get a empty msg index in msgq
 	int i = 0;
 	for (i = 0; i < NR_MSGS; i++) {
 		if (pcb->msgq[i].src == INVALID_MSG_SRC) {

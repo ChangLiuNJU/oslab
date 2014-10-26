@@ -5,81 +5,6 @@
 #include "lib.h"
 #include "drivers.h"
 
-int pidA, pidB, pidC, pidE, pidD;
-void A () { 
-	Message m1, m2;
-	m1.src = current->pid;
-	int x = 0;
-	while(1) {
-		if(x % 10000000 == 0) {
-			printf("a"); 
-			send(pidA, pidE, &m1);
-			receive(pidE, &m2);
-		}
-		x ++;
-	}
-}
-void B () { 
-	Message m1, m2;
-	m1.src = current->pid;
-	int x = 0;
-	receive(pidE, &m2);
-	while(1) {
-		if(x % 10000000 == 0) {
-			printf("b"); 
-			send(pidB,pidE, &m1);
-			receive(pidE, &m2);
-		}
-		x ++;
-	}
-}
-void C () { 
-	Message m1, m2;
-	m1.src = current->pid;
-	int x = 0;
-	receive(pidE, &m2);
-	while(1) {
-		if(x % 10000000 == 0) {
-			printf("c"); 
-			send(pidC, pidE, &m1);
-			receive(pidE, &m2);
-		}
-		x ++;
-	}
-}
-void D () { 
-	Message m1, m2;
-	m1.src = current->pid;
-	receive(pidE, &m2);
-	int x = 0;
-	while(1) {
-		if(x % 10000000 == 0) {
-			printf("d"); 
-			send(pidD, pidE, &m1);
-			receive(pidE, &m2);
-		}
-		x ++;
-	}
-}
- 
-void E () {
-	Message m1, m2;
-	m2.src = current->pid;
-	char c = ' ';
-	while(1) {
-		receive(ANY, &m1);
-		if(m1.src == pidA) {c = '|'; m2.dst = pidB; }
-		else if(m1.src == pidB) {c = '/'; m2.dst = pidC;}
-		else if(m1.src == pidC) {c = '-'; m2.dst = pidD;}
-		else if(m1.src == pidD) {c = '\\';m2.dst = pidA;}
-		else assert(0);
- 
-		printf("\033[s\033[1000;1000H%c\033[u", c);
-		send(pidE, m2.dst, &m2);
-	}
- 
-}
-
 void
 echo() {
 	static int tty = 1;
@@ -104,7 +29,7 @@ echo() {
 			dev_write(dev, 0, buf, nread);
 			dev_write(dev, 0, "\n", 1);
 		} else {
-			 // printf("%s\n", name);
+			 printf("%s\n", name);
 		}
 	}
 	}
