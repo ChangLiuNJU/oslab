@@ -14,12 +14,18 @@ typedef struct Semaphore {
 
 typedef struct MsgHead {
 	pid_t src, dst;
-	int type;
+	union {
+		int type;
+		int ret;
+	};
 } MsgHead;
 
 typedef struct Message {
 	pid_t src, dst;
-	int type;
+	union {
+		int type;
+		int ret;
+	};
 	char payload[20];
 } Message;
 

@@ -146,9 +146,8 @@ read_request(DevMessage *m) {
 		if (c->rtop >= RSTK_SZ) panic("too many read request");
 	} else {
 		int nread = get_cooked(c, m->buf, m->count);
-		m->header.type = nread;
-		//@TO_CHECK
-		send(MSG_HWINTR, m->header.src, (Message*)m);
+		m->header.ret = nread;
+		send(current->pid, m->header.src, (Message*)m);
 	}
 }
 

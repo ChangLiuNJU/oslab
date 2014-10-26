@@ -93,8 +93,6 @@ echo() {
 		if (dev != NULL) {
 			dev_write(dev, 0, name, 4);
 			dev_write(dev, 0, "# ", 2);
-			printf("%s```````````%d\n", name, dev->dev_id);
-			hal_list();
 			int i, nread = dev_read(dev, 0, buf, 255);
 			buf[nread] = 0;
 			for (i = 0; i < nread; i ++) {
@@ -130,12 +128,6 @@ entry(void) {
 	init_hal();
 	init_tty();
 	test();
-
-	// pidA = create_kthread(A)->pid;
-	// pidB = create_kthread(B)->pid;
-	// pidC = create_kthread(C)->pid;
-	// pidD = create_kthread(D)->pid;
-	// pidE = create_kthread(E)->pid;
 
 	enable_interrupt();
 	printf("------Enable Interrupt------\n");

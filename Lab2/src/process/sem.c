@@ -33,7 +33,6 @@ V(Semaphore *sem) {
 
 void 
 send(pid_t src, pid_t dst, Message *m) {
-	// printf("send start\n");
 	P(&(PCBs[dst].mutex));
 	V(&(PCBs[dst].msgsemANY));
 	if (src >= 0) {
@@ -53,12 +52,10 @@ send(pid_t src, pid_t dst, Message *m) {
 	pcb->msgq[i].dst = dst;
 
 	V(&PCBs[dst].mutex);
-	// printf("send end\n");
 }
 
 void 
 receive(pid_t src, Message *m) {
-	// printf("receive start\n");
 	if (src == ANY) {
 		P(&(current->msgsemANY));
 		P(&(current->mutex));
@@ -76,7 +73,6 @@ receive(pid_t src, Message *m) {
 		}
 		current->msgq[i].src = INVALID_MSG_SRC;
 		V(&(current->mutex));
-		// printf("receive end1\n");
 		return;
 	} else {
 		P(&(current->msgsem[src]));

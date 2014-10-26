@@ -16,7 +16,6 @@ static int caps, ctrl, alt, shft;
 
 void
 readkey(void) {
-	// printf("readkey start\n");
 	uint32_t code = in_byte(0x60);
 	in_byte(0x61);
 
@@ -61,7 +60,6 @@ readkey(void) {
 			case K_CAPS: caps ++; break;
 		}
 	}
-	// printf("readkey end\n");
 }
 
 int keychar[2][128] = {

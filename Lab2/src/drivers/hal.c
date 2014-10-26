@@ -35,8 +35,6 @@ void hal_register(const char *name, pid_t pid, int dev_id) {
 	dev->pid = pid;
 	dev->dev_id = dev_id;
 	list_add_tail(&dev->list, &devices);
-	printf("++++++++++++++++++++ tty2.dev_id:%d\n", dev_pool[1].dev_id);
-	printf("-------------------- tty2.dev_id:%d\n", hal_get("tty2")->dev_id);
 	unlock();
 }
 
@@ -63,7 +61,6 @@ Device *hal_get(const char *name) {
 	list_for_each(it, &devices) {
 		Device *dev = list_entry(it, Device, list);
 		if (strcmp(dev->name, name) == 0) {
-			printf("DEV_GET:-----%s %s\n", dev->name, name);
 			unlock();
 			return dev;
 		}
@@ -91,7 +88,7 @@ dev_rw(int type, Device *dev, off_t offset, void *buf, size_t count) {
 	devm->count = count;
 	send(current->pid, dev->pid, &m);
 	receive(dev->pid, &m);
-	return m.type;
+	return m.ret;
 }
 
 size_t
