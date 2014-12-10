@@ -89,7 +89,6 @@ receive(pid_t src, Message *m) {
 		*m = current->msgq[i];
 		current->msgq[i].src = INVALID_MSG_SRC;
 		V(&(current->mutex));
-		// printf("receive end2\n");
 		return;
 	}
 	assert(0);
