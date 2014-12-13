@@ -24,7 +24,9 @@ kernel.img: kernel
 	-@(echo "> compile" && uname -a && uptime && pstree -A) | git commit -F - $(GITFLAGS) # KEEP IT
 
 kernel: $(OBJS)
-	$(LD) $(LDFLAGS) -e entry -Ttext 0x00100000 -o kernel $(OBJS)
+	$(LD) $(LDFLAGS) -e entry -Ttext 0xC0100000 -o kernel $(OBJS)
+	objdump -D kernel > code.txt
+	readelf -a kernel > elf.txt
 
 -include $(patsubst %.o, %.d, $(OBJS))
 

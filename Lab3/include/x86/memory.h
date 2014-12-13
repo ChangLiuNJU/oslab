@@ -1,6 +1,13 @@
 #ifndef __X86_MEMORY_H__
 #define __X86_MEMORY_H__
 
+#define KOFFSET 0xC0000000
+
+/* the maxinum kernel size is 16MB */
+#define KMEM (16 * 1024 * 1024)
+/* Nanos has 128MB physical memory - qemu default setting */
+#define PHY_MEM (128 * 1024 * 1024)
+
 #define DPL_KERNEL              0
 #define DPL_USER                3
 
@@ -9,9 +16,12 @@
 #define SEG_KERNEL_DATA         2
 
 #define pa_to_va(addr) \
-	((void*)((uint32_t)(addr)))
-	// ((void*)((uint32_t)(addr) - KOFFSET))
+	((void*)(((uint32_t)(addr)) + KOFFSET))
 	
+#define va_to_pa(addr) \
+	((void*)(((uint32_t)(addr)) - KOFFSET))
+
+
 struct GateDescriptor {
 	uint32_t offset_15_0      : 16;
 	uint32_t segment          : 16;

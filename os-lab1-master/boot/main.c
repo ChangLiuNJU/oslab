@@ -1,15 +1,16 @@
-/* start.S的主要功能是切换在实模式工作的处理器到32位保护模式。为此需要设置正确的
- * GDT、段寄存器和CR0寄存器。C语言代码的主要工作是将磁盘上的内容装载到内存中去。
- * 磁盘镜像的结构如下：
+/* start.S has put the processor into protected 32-bit mode,
+	 and set up the right segmentation. The layout of our hard
+	 disk is shown below:
 	 +-----------+------------------.        .-----------------+
-	 |   引导块  |   二进制代码       ...        (ELF格式)     |
+	 | bootblock |  The game binary    ...     (in ELF format) |
 	 +-----------+------------------`        '-----------------+
- * C代码将整个可执行文件加载到物理内存0x100000的位置，然后跳转到ELF文件头中指定的入口执行。 */
+	 So the task of the C code is to load the game binary into
+	 correct memory location (0x100000), and jump to it. */
 
 #include "boot.h"
 
 #define SECTSIZE 512
-#define KOFFSET 0xC0000000
+#define KOFFSET  0xC0000000
 
 void readseg(unsigned char *, int, int);
 
@@ -17,33 +18,38 @@ void
 bootmain(void) {
 	struct ELFHeader *elf;
 	struct ProgramHeader *ph, *eph;
-	unsigned char *pa, *i;
+	unsigned char* pa, *i;
+	void (*entry)(void);
+	unsigned int j;
 
-	/* 因为引导扇区只有512字节，我们设置了堆栈从0x8000向下生长。
-	 * 我们需要一块连续的空间来容纳ELF文件头，因此选定了0x8000。 */
+	/* The binary is in ELF format (please search the Internet).
+	   0x8000 is just a scratch address. Anywhere would be fine. */
 	elf = (struct ELFHeader*)0x8000;
 
-	/* 读入ELF文件头 */
+	/* Read the first 4096 bytes into memory.
+	   The first several bytes is the ELF header. */
 	readseg((unsigned char*)elf, 4096, 0);
 
-	/* 把每个program segement依次读入内存 */
+	/* Load each program segment */
 	ph = (struct ProgramHeader*)((char *)elf + elf->phoff);
 	eph = ph + elf->phnum;
 	for(; ph < eph; ph ++) {
-		pa = (unsigned char*)(ph->paddr - KOFFSET); /* 获取物理地址 */
-		readseg(pa, ph->filesz, ph->off); /* 读入数据 */
+		pa = (unsigned char*)(ph->paddr - KOFFSET); /* physical address */
+		readseg(pa, ph->filesz, ph->off); /* load from disk */
 		for (i = pa + ph->filesz; i < pa + ph->memsz; *i ++ = 0);
 	}
 
-	((void(*)(void))(elf->entry - KOFFSET))();
+	/* Here we go! */
+	entry = (void(*)(void))(elf->entry - KOFFSET);
+	entry(); /* never returns */
 }
 
 void
 waitdisk(void) {
-	while((in_byte(0x1F7) & 0xC0) != 0x40); /* 等待磁盘完毕 */
+	while((in_byte(0x1F7) & 0xC0) != 0x40); /* Spin on disk until ready */
 }
 
-/* 读磁盘的一个扇区 */
+/* Read a single sector (512B) from disk */
 void
 readsect(void *dst, int offset) {
 	int i;
@@ -63,7 +69,7 @@ readsect(void *dst, int offset) {
 	}
 }
 
-/* 将位于磁盘offset位置的count字节数据读入物理地址pa */
+/* Read "count" bytes at "offset" from binary into physical address "pa". */
 void
 readseg(unsigned char *pa, int count, int offset) {
 	unsigned char *epa;

@@ -36,15 +36,39 @@ typedef union CR3 {
 	uint32_t val;
 } CR3;
 
-/* 将CPU置入休眠状态直到下次中断到来 */
-static inline void
-wait_for_interrupt() {
-	asm volatile("hlt");
+/* read CR0 */
+static inline uint32_t
+read_cr0() {
+	uint32_t val;
+	asm volatile("movl %%cr0, %0" : "=r"(val));
+	return val;
 }
 
-/* 修改IDRT */
+/* write CR0 */
 static inline void
-save_idt(void *addr, uint32_t size) {
+write_cr0(CR0 *cr0) {
+	asm volatile("movl %0, %%cr0" : : "r"(cr0->val));
+}
+
+/* write CR3, notice that CR3 are never read in Nanos */
+static inline void
+write_cr3(CR3 *cr3) {
+	asm volatile("movl %0, %%cr3" : : "r"(cr3->val));
+}
+
+/* modify the value of GDTR */
+static inline void
+write_gdtr(void *addr, uint32_t size) {
+	static volatile uint16_t data[3];
+	data[0] = size - 1;
+	data[1] = (uint32_t)addr;
+	data[2] = ((uint32_t)addr) >> 16;
+	asm volatile("lgdt (%0)" : : "r"(data));
+}
+
+/* modify the value of IDTR */
+static inline void
+write_idtr(void *addr, uint32_t size) {
 	static volatile uint16_t data[3];
 	data[0] = size - 1;
 	data[1] = (uint32_t)addr;
@@ -52,17 +76,38 @@ save_idt(void *addr, uint32_t size) {
 	asm volatile("lidt (%0)" : : "r"(data));
 }
 
-/* 打开外部中断 */
+/* write TR */
 static inline void
-enable_interrupt(void) {
+write_tr(uint16_t selector) {
+	asm volatile("ltr %0" : : "r"(selector));
+}
+
+/* read EFLAGS */
+static inline uint32_t
+read_eflags(void) {
+	volatile uint32_t val;
+	asm volatile("pushf; popl %0" : "=rm"(val): :"memory");
+	return val;
+}
+
+/* enable interrupt */
+static inline void
+sti(void) {
 	asm volatile("sti");
 }
 
-/* 关闭外部中断 */
+/* disable interrupt */
 static inline void
-disable_interrupt(void) {
+cli(void) {
 	asm volatile("cli");
 }
+
+/* put the CPU into idle, waiting for the next interrupt */
+static inline void
+wait_intr() {
+	asm volatile("hlt");
+}
+
 
 #define NR_IRQ    256
 
