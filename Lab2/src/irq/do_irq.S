@@ -36,8 +36,9 @@ asm_do_irq:
 	movl (current), %eax
 	movl (%eax), %esp
 
+	# pop GPRs
 	popal
-
+	# pop irq
 	addl $4, %esp
-
+	# pop EIP, CS, EFALGS
 	iret
