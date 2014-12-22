@@ -4,6 +4,7 @@
 #include "drivers/hal.h"
 #include "drivers/tty.h"
 #include "drivers/term.h"
+#include "drivers/ramdisk.h"
 #include "device.h"
 
 #endif

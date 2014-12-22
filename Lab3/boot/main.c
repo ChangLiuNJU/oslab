@@ -10,6 +10,7 @@
 
 #define SECTSIZE 512
 #define KOFFSET 0xC0000000
+// #define KOFFSET 0x0
 
 void readseg(unsigned char *, int, int);
 

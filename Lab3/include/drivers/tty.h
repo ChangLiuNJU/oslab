@@ -39,6 +39,7 @@ void init_tty(void);
 void ttyd(void);
 void send_keymsg(void);
 void init_console();
+void init_tty_echo();
 
 void send_updatemsg(void);
 
