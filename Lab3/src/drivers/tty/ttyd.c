@@ -9,7 +9,6 @@ ttyd(void) {
 	lock();
 	for (i = 0; i < NR_TTY; i ++) {
 		hal_register(ttynames[i], TTY, i);
-
 	}
 	unlock();
 	while (1) {

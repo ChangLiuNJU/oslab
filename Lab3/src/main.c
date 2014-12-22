@@ -4,6 +4,7 @@
 #include "process.h"
 #include "lib.h"
 #include "drivers.h"
+#include "file.h"
 
 void 
 entry(void) {
@@ -13,13 +14,16 @@ entry(void) {
 
 	init_timer();
 	init_idt();
-	init_intr();
+	init_intr();			//Initial interrupt
 	init_serial();
 	init_idle_thread();	
 	
 	init_hal();
 	init_tty();
 	init_tty_echo();
+
+	init_ramdisk();
+	init_file();
 
 	enable_interrupt();
 

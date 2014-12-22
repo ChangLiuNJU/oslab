@@ -9,7 +9,10 @@
 
 struct DevMessage {
 	MsgHead header; // header与Message的头部定义保持一致即可(src, dst, type)
-	int dev_id;
+	union {
+		int dev_id;		//for device
+		int file_name; 	//for file i/o
+	};
 	off_t offset;
 	void *buf;
 	size_t count;

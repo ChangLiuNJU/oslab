@@ -28,7 +28,7 @@ echo() {
 			dev_write(dev, 0, buf, nread);
 			dev_write(dev, 0, "\n", 1);
 		} else {
-			 printf("%s\n", name);
+			 // printf("%s\n", name);
 		}
 	}
 }
