@@ -1,7 +1,7 @@
 #include "drivers.h"
 #include "file.h"
 
-void filed(void) {
+void fm(void) {
 	Message m;
 	while (1) {
 		receive(ANY, &m);

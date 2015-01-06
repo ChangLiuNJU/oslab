@@ -9,6 +9,6 @@ extern pid_t FILE;
 
 void do_read(int file_name, uint8_t *buf, off_t offset, size_t len);
 void init_file(void);
-void filed(void);
+void fm(void);
 
 #endif

@@ -36,10 +36,10 @@ create_kthread(void (*entry)(void)) {
 	
 	//allocate a pcb
 	assert(pcbs_avl < NR_PCBS);	
-	PCB *pcb  = &(PCBs[pcbs_avl]);
-	pcb->pid 		 = pcbs_avl;	//allocate pid
+	PCB *pcb = &(PCBs[pcbs_avl]);
+	pcb->pid = pcbs_avl;			//allocate pid
 	pcbs_avl ++;
-	pcb->lock_depth  = 0;			//set lock depth
+	pcb->lock_depth = 0;			//set lock depth
 	
 	INIT_LIST_HEAD(&(pcb->semq));
 	pcb->mutex.count = 1;
@@ -56,7 +56,7 @@ create_kthread(void (*entry)(void)) {
 	}
 
 	//set the trapframe
-	pcb->tf 		 = (struct TrapFrame*)(pcb->kstack + KSTACK_SIZE) - 1; 	
+	pcb->tf = (struct TrapFrame*)(pcb->kstack + KSTACK_SIZE) - 1; 	
 
 	pcb->tf->edi = 0;
 	pcb->tf->esi = 0;
