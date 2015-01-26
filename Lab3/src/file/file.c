@@ -1,7 +1,7 @@
 #include "file.h"
 #include "drivers.h"
 
-pid_t FILE;
+pid_t FM;
 
 void do_read(int file_name, uint8_t *buf, off_t offset, size_t len) {
 	Message m;
@@ -12,9 +12,9 @@ void do_read(int file_name, uint8_t *buf, off_t offset, size_t len) {
 	msg->buf = buf; 
 	msg->count = len;
 	m.type = MSG_DO_READ;
-	send(current->pid, FILE, &m);
+	send(current->pid, FM, &m);
 }
 
 void init_file(void) {
-	FILE = create_kthread(fm)->pid;
+	FM = create_kthread(fm)->pid;
 }

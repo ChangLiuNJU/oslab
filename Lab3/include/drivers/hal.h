@@ -7,7 +7,7 @@
 #define MSG_DEVWR  2
 #define MSG_HWINTR -1
 
-struct DevMessage {
+typedef struct DevMessage {
 	MsgHead header; // header与Message的头部定义保持一致即可(src, dst, type)
 	union {
 		int dev_id;		//for device
@@ -16,17 +16,15 @@ struct DevMessage {
 	off_t offset;
 	void *buf;
 	size_t count;
-};
-typedef struct DevMessage DevMessage;
+} DevMessage;
 
-struct Device {
+typedef struct Device {
 	const char *name;
 	pid_t pid;
 	int dev_id;
 	
 	list_head list;
-};
-typedef struct Device Device;
+} Device;
 
 void init_hal(void);
 size_t dev_read(Device *dev, off_t offset, void *buf, size_t count);

@@ -5,4 +5,6 @@
 #include "process/schedule.h"
 #include "process/sem.h"
 
+void pm(void);	//Process Management
+
 #endif

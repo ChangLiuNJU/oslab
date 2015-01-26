@@ -152,6 +152,7 @@ void make_pde(PDE *, void *);
 void make_pte(PTE *, void *);
 void init_page(void);
 void init_segment(void);
+void mm(void);		//Memory Management
 
 #endif
 

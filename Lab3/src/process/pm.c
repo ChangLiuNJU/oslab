@@ -45,3 +45,11 @@ create_uthread() {
 	list_add(&(pcb->state_list), &readyq_h);
 	return pcb;
 }
+
+void pm(void) {
+	// PCB* p = create_uthread()
+
+	// do_read(0, buf, 0 , 512);
+
+	
+}
