@@ -5,6 +5,7 @@
 #include "process/schedule.h"
 #include "process/sem.h"
 
-void pm(void);	//Process Management
+extern pid_t PM;
+void init_pm(void);
 
 #endif

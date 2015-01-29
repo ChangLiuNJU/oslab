@@ -3,9 +3,9 @@
 
 #include "kernel.h"
 
-#define MSG_DEVRD  1
-#define MSG_DEVWR  2
-#define MSG_HWINTR -1
+#define MSG_HWINTR -1	/* Hardware Interrupte */
+#define MSG_DEVRD  1	/* Read bytes from device */
+#define MSG_DEVWR  2	/* Write bytes from device */
 
 typedef struct DevMessage {
 	MsgHead header; // header与Message的头部定义保持一致即可(src, dst, type)

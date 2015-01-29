@@ -2,7 +2,7 @@
 #define __SEM_H__
 #define ANY -1
 #define MSG_SZ 512
-#define INVALID_MSG_SRC -2 
+#define INVALID_MSG_SRC -2
 
 #include "lib.h"
 #include "common.h"

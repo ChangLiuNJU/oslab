@@ -13,6 +13,7 @@ void do_read(int file_name, uint8_t *buf, off_t offset, size_t len) {
 	msg->count = len;
 	m.type = MSG_DO_READ;
 	send(current->pid, FM, &m);
+	receive(FM, &m);
 }
 
 void init_file(void) {

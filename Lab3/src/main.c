@@ -27,12 +27,12 @@ entry(void) {
 	init_ramdisk();
 	init_file();
 
-	// do_read(0, buf, 0, 1);
+	init_pm();
+
 	enable_interrupt();
 
 	while (1) {
 		wait_for_interrupt();
-		// printf("%d\n", buf[0]);
 	}
 	assert(0);
 }

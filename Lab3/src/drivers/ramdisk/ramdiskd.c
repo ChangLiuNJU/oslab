@@ -13,6 +13,8 @@ void ramdiskd(void) {
 		switch (m.type) {
 			case MSG_DEV_READ:
 				ram_read((DevMessage*)&m);
+				m.type = MSG_DEVRD_DONE;
+				send(current->pid, m.src, &m);
 				break;
 		}
 	}

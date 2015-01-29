@@ -11,6 +11,7 @@ uint8_t *disk = (void*)file;
 pid_t RAMDISK;
 
 void init_ramdisk(void) {
+	//Load test1
 	memcpy(file[0], test1, test1_len);
 	RAMDISK = create_kthread(ramdiskd)->pid;
 }

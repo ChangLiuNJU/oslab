@@ -1,3 +1,6 @@
+#ifndef __ELF_H__
+#define __ELF_H__
+
 /* ELF32二进制文件头 */
 struct ELFHeader {
 	unsigned int   magic;
@@ -6,12 +9,12 @@ struct ELFHeader {
 	unsigned short machine;
 	unsigned int   version;
 	unsigned int   entry;
-	unsigned int   phoff;		//Points to the start of the program header table.
+	unsigned int   phoff;
 	unsigned int   shoff;
 	unsigned int   flags;
 	unsigned short ehsize;
 	unsigned short phentsize;
-	unsigned short phnum;		//Contains the number of entries in the program header table.
+	unsigned short phnum;
 	unsigned short shentsize;
 	unsigned short shnum;
 	unsigned short shstrndx;
@@ -29,20 +32,4 @@ struct ProgramHeader {
 	unsigned int align;
 };
 
-/* I/O处理函数 */
-static inline char
-in_byte(short port) {
-	char data;
-	asm volatile("in %1,%0" : "=a" (data) : "d" (port));
-	return data;
-}
-static inline int 
-in_long(short port) {
-	int data;
-	asm volatile("in %1, %0" : "=a" (data) : "d" (port));
-	return data;
-}
-static inline void
-out_byte(short port, char data) {
-	asm volatile("out %0,%1" : : "a" (data), "d" (port));
-}
+#endif

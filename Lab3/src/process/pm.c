@@ -1,7 +1,11 @@
 #include "process.h"
+#include "file.h"
+#include "kernel.h"
+
+pid_t PM;
 
 PCB*
-create_uthread() {
+create_uthread(int file_name) {
 	assert(pcbs_avl < NR_PCBS);
 	PCB *pcb = &(PCBs[pcbs_avl]);
 	pcb->pid = pcbs_avl;
@@ -35,21 +39,38 @@ create_uthread() {
 	pcb->tf->eax = 0;
 	pcb->tf->irq = 0;
 
-	// pcb->tf->err = 0;
-	// pcb->tf->eip 	= (uint32_t)entry;
+	//load elf header from file[file_name]
+	uint8_t buf[52];
+	do_read(file_name, buf, 0, 52);
+	struct ELFHeader *elf;
+	elf = (struct ELFHeader*)buf;
+	printf("%x\n", elf->entry);
+	
+	pcb->tf->eip = elf->entry;
+	/* Load each program segment */
+	struct ProgramHeader *ph, *eph;
+	ph = (struct ProgramHeader*)((char *)elf + elf->phoff);
+	eph = ph + elf->phnum;
+
+	for (; ph < eph; ph ++) {
+		//mm
+	} 
+
 	pcb->tf->cs 	= 1 << 3;
 	pcb->tf->eflags = 0x00000202;
 
 	//add to ready queue
 	pcb->state = READY;
-	list_add(&(pcb->state_list), &readyq_h);
+	// list_add(&(pcb->state_list), &readyq_h);
 	return pcb;
 }
 
 void pm(void) {
-	// PCB* p = create_uthread()
-
-	// do_read(0, buf, 0 , 512);
-
-	
+	create_uthread(0);
+	while (1) {
+		;
+	}
+}
+void init_pm(void) {
+	PM = create_kthread(pm)->pid;
 }

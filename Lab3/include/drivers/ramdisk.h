@@ -4,6 +4,7 @@
 #define NR_MAX_FILE 8
 #define NR_FILE_SIZE (128 * 1024)
 #define MSG_DEV_READ 3
+#define MSG_DEVRD_DONE 4
 
 extern const char *ramdiskname;
 extern pid_t RAMDISK;

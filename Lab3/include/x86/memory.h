@@ -37,6 +37,10 @@
 #define NR_PDE		1024
 #define NR_PTE		1024
 #define PD_SIZE		((NR_PTE) * (PAGE_SIZE))
+#define NR_PAGES	27684
+
+/* Message for memory */
+#define MSG_REQ_PAGE 1
 
 /* force the data to be aligned with page boundart
    statically defined page tables uses this feature */
