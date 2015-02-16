@@ -11,6 +11,7 @@ void mm(void) {
 		receive(ANY, &m);
 		switch(m.type) {
 			case MSG_REQ_PAGE:
+					
 				break;
 		}
 	}

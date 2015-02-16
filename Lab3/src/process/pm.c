@@ -44,7 +44,6 @@ create_uthread(int file_name) {
 	do_read(file_name, buf, 0, 52);
 	struct ELFHeader *elf;
 	elf = (struct ELFHeader*)buf;
-	printf("%x\n", elf->entry);
 	
 	pcb->tf->eip = elf->entry;
 	/* Load each program segment */

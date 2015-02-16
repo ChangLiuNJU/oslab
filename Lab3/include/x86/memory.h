@@ -2,7 +2,6 @@
 #define __X86_MEMORY_H__
 
 #define KOFFSET 0xC0000000
-// #define KOFFSET 0x0
 
 /* the maxinum kernel size is 16MB */
 #define KMEM (16 * 1024 * 1024)
